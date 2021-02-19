@@ -19,7 +19,7 @@ export default class RunwayRelationshipModel {
     /**
      *
      * @constructor
-     * @param primaryRunway {RuwnayModel}
+     * @param primaryRunway {RunwayModel}
      * @param comparatorRunway {RunwayModel}
      */
     constructor(primaryRunway, comparatorRunway) {
