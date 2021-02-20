@@ -454,6 +454,9 @@ export default class AircraftModel {
         this.projected = false;
         this.relativePositionHistory = [];
 
+        /**
+         * @type {String}
+         */
         this.category = options.category; // 'arrival' or 'departure'
 
         /**

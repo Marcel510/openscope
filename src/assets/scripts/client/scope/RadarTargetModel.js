@@ -263,7 +263,15 @@ export default class RadarTargetModel {
     _init(aircraftModel) {
         this.aircraftModel = aircraftModel;
         this._cruiseAltitude = aircraftModel.fms.flightPlanAltitude;
-        this._dataBlockLeaderDirection = this._theme.DATA_BLOCK.LEADER_DIRECTION;
+
+        // Different dataBlockLeaderDirection for EDDM 26L arrivals
+        if (aircraftModel.category === 'arrival' && aircraftModel.destination === 'EDDM' &&
+            aircraftModel.fms.arrivalRunwayModel.name === '26L') {
+            this._dataBlockLeaderDirection = 180;
+        } else {
+            this._dataBlockLeaderDirection = this._theme.DATA_BLOCK.LEADER_DIRECTION;
+        }
+
         this._dataBlockLeaderLength = this._theme.DATA_BLOCK.LEADER_LENGTH;
         this._routeString = aircraftModel.fms.getRouteString();
 
@@ -484,6 +492,7 @@ export default class RadarTargetModel {
             }
 
             this._dataBlockLeaderDirection = DATA_BLOCK_POSITION_MAP[desiredDirection];
+            console.log('line 487');
         }
 
         if (desiredLength !== '' && !_isNaN(desiredLength)) {
