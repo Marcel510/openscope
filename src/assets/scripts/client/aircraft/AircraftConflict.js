@@ -196,7 +196,6 @@ export default class AircraftConflict {
 
             if (runwayRelationship.parallel) {
                 // hide notices for aircraft on adjacent final approach courses
-                console.log(`parallel: ${a1.callsign} ${a2.callsign}`);
                 disableNotices = true;
                 // applicable for EDDM/EDDF:
                 // No LatSep required between two aircraft on two different runways as soon as established on localizer

@@ -8,7 +8,7 @@ import { vadd } from '../math/vector';
 import { leftPad } from '../utilities/generalUtilities';
 import { EVENT } from '../constants/eventNames';
 import { INVALID_NUMBER } from '../constants/globalConstants';
-import { DECIMAL_RADIX } from '../utilities/unitConverters';
+import { nm, DECIMAL_RADIX } from '../utilities/unitConverters';
 import {
     DATA_BLOCK_DIRECTION_LENGTH_SEPARATOR,
     DATA_BLOCK_POSITION_MAP
@@ -370,8 +370,8 @@ export default class RadarTargetModel {
 
         // Distance on final for loc established aircraft
         if (this.aircraftModel.isEstablishedOnCourse()) {
-            const distanceOnFinal = distance2d(this.aircraftModel.relativePosition,
-                this.aircraftModel.fms.arrivalRunwayModel.relativePosition);
+            const distanceOnFinal = nm(distance2d(this.aircraftModel.relativePosition,
+                this.aircraftModel.fms.arrivalRunwayModel.relativePosition));
             dataBlockRowOne += ` ${distanceOnFinal.toFixed(1)}`;
         }
 
