@@ -197,7 +197,9 @@ export default class AircraftConflict {
             if (runwayRelationship.parallel) {
                 // hide notices for aircraft on adjacent final approach courses
                 disableNotices = true;
-                applicableLatSepMin = runwayRelationship.separationMinimum;
+                // applicable for EDDM/EDDF:
+                // No LatSep required between two aircraft on two different runways as soon as established on localizer
+                applicableLatSepMin = 0;
             }
         }
 

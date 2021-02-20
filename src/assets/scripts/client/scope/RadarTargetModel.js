@@ -8,12 +8,13 @@ import { vadd } from '../math/vector';
 import { leftPad } from '../utilities/generalUtilities';
 import { EVENT } from '../constants/eventNames';
 import { INVALID_NUMBER } from '../constants/globalConstants';
-import { DECIMAL_RADIX } from '../utilities/unitConverters';
+import { nm, DECIMAL_RADIX } from '../utilities/unitConverters';
 import {
     DATA_BLOCK_DIRECTION_LENGTH_SEPARATOR,
     DATA_BLOCK_POSITION_MAP
 } from '../constants/scopeConstants';
 import { THEME } from '../constants/themes';
+import { distance2d } from '../math/distance';
 
 // TODO: abstract these to an appropriate constants file
 const HEAVY_LETTER = 'H';
@@ -263,7 +264,15 @@ export default class RadarTargetModel {
     _init(aircraftModel) {
         this.aircraftModel = aircraftModel;
         this._cruiseAltitude = aircraftModel.fms.flightPlanAltitude;
-        this._dataBlockLeaderDirection = this._theme.DATA_BLOCK.LEADER_DIRECTION;
+
+        // Different dataBlockLeaderDirection for EDDM 26L arrivals
+        if (aircraftModel.category === 'arrival' && aircraftModel.destination === 'EDDM' &&
+            aircraftModel.fms.arrivalRunwayModel.name === '26L') {
+            this._dataBlockLeaderDirection = 180;
+        } else {
+            this._dataBlockLeaderDirection = this._theme.DATA_BLOCK.LEADER_DIRECTION;
+        }
+
         this._dataBlockLeaderLength = this._theme.DATA_BLOCK.LEADER_LENGTH;
         this._routeString = aircraftModel.fms.getRouteString();
 
@@ -357,6 +366,13 @@ export default class RadarTargetModel {
             default:
 
                 break;
+        }
+
+        // Distance on final for loc established aircraft
+        if (this.aircraftModel.isEstablishedOnCourse()) {
+            const distanceOnFinal = nm(distance2d(this.aircraftModel.relativePosition,
+                this.aircraftModel.fms.arrivalRunwayModel.relativePosition));
+            dataBlockRowOne += ` ${distanceOnFinal.toFixed(1)}`;
         }
 
         return dataBlockRowOne;
@@ -484,6 +500,7 @@ export default class RadarTargetModel {
             }
 
             this._dataBlockLeaderDirection = DATA_BLOCK_POSITION_MAP[desiredDirection];
+            console.log('line 487');
         }
 
         if (desiredLength !== '' && !_isNaN(desiredLength)) {
