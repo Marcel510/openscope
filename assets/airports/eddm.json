@@ -24,7 +24,8 @@
     },
     "arrivalRunway": "26L",
     "departureRunway": "26R",
-    "defaultMaps": ["EDDM - extended centerlines", "EDDM - class C airspace", "EDDM - CTR", "Other airports - airspaces", "Other airports - extended centerlines", "Neighboring sectors"],
+    "defaultMaps": ["EDDM - extended centerlines", "EDDM - class C airspace", "EDDM - CTR",
+        "Other airports - airspaces", "Other airports - extended centerlines", "Neighboring sectors"],
     "airspace": [
         {
             "floor": 0,
@@ -2980,7 +2981,7 @@
             "origin": "",
             "destination": "EDDM",
             "category": "arrival",
-            "route": "HAREM.T104.ANORA.ANORA3A.EDDM26L",
+            "route": "HAREM.T104.ANORA.ANORA3A.EDDM26R",
             "altitude": 20000,
             "speed": 280,
             "method": "random",
@@ -3050,7 +3051,7 @@
             "origin": "",
             "destination": "EDDM",
             "category": "arrival",
-            "route": "ARMUT.T703.LULAR.T105.EXUSI.EXUSI4A.EDDM26L",
+            "route": "ARMUT.T703.LULAR.T105.EXUSI.EXUSI4A.EDDM26R",
             "altitude": 20000,
             "speed": 280,
             "method": "random",

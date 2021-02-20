@@ -14,6 +14,7 @@ import {
     DATA_BLOCK_POSITION_MAP
 } from '../constants/scopeConstants';
 import { THEME } from '../constants/themes';
+import { distance2d } from '../math/distance';
 
 // TODO: abstract these to an appropriate constants file
 const HEAVY_LETTER = 'H';
@@ -365,6 +366,13 @@ export default class RadarTargetModel {
             default:
 
                 break;
+        }
+
+        // Distance on final for loc established aircraft
+        if (this.aircraftModel.isEstablishedOnCourse()) {
+            const distanceOnFinal = distance2d(this.aircraftModel.relativePosition,
+                this.aircraftModel.fms.arrivalRunwayModel.relativePosition);
+            dataBlockRowOne += ` ${distanceOnFinal.toFixed(1)}`;
         }
 
         return dataBlockRowOne;
