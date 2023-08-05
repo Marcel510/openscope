@@ -431,24 +431,6 @@ export default class AircraftModel {
         /**
          * Flag used to determine if an aircraft can be removed from the sim.
          *
-         * This tells the `AircraftController` that `AircraftStripView` associated with this
-         * instance is safe to remove. This property should only be changed via the
-         * `.setIsFlightStripRemovable()` method
-         *
-         * The `AircraftModel` will know when conditions are correct for the `StripView`
-         * to be removed, however, only the `AircraftController` has access to an aircraft's
-         * `StripView`.
-         *
-         * @for AircraftModel
-         * @property isRemovable
-         * @type {boolean}
-         * @default false
-         */
-        this.isFlightStripRemovable = false;
-
-        /**
-         * Flag used to determine if an aircraft can be removed from the sim.
-         *
          * This tells the `AircraftController` that this instance is safe to remove.
          * This property should only be changed via the `.setIsRemovable()` method.
          *
@@ -533,9 +515,7 @@ export default class AircraftModel {
             this.speed = 0;
         } else if (this.category !== FLIGHT_CATEGORY.ARRIVAL && this.category !== FLIGHT_CATEGORY.OVERFLIGHT) {
             throw new Error('Invalid #category found in AircraftModel');
-        }
-
-        if (this.category !== FLIGHT_CATEGORY.DEPARTURE) {
+        } else {
             const bottomAltitude = this.fms.getBottomAltitude();
             const airportModel = AirportController.airport_get();
             const airspaceCeiling = airportModel.maxAssignableAltitude;
@@ -1052,12 +1032,12 @@ export default class AircraftModel {
      * @return {boolean}
      */
     isOnGround() {
-        let airportModel = this.fms.departureAirportModel;
-        let runwayModel = this.fms.departureRunwayModel;
-
         if (this.isOverflight()) {
             return false;
         }
+
+        let airportModel = this.fms.departureAirportModel;
+        let runwayModel = this.fms.departureRunwayModel;
 
         if (this.isArrival()) {
             airportModel = this.fms.arrivalAirportModel;
@@ -1114,7 +1094,6 @@ export default class AircraftModel {
             this.flightPhase === FLIGHT_PHASE.WAITING;
     }
 
-    // TODO: The function description and what it actually does do not match
     /**
      * Returns whether the aircraft is currently taking off
      *
@@ -1122,7 +1101,7 @@ export default class AircraftModel {
      * @method isTakeoff
      */
     isTakeoff() {
-        return this.isTaxiing() || this.flightPhase === FLIGHT_PHASE.TAKEOFF;
+        return this.flightPhase === FLIGHT_PHASE.TAKEOFF;
     }
 
     /**
@@ -1142,18 +1121,6 @@ export default class AircraftModel {
         }
 
         return true;
-    }
-
-    /**
-     * Sets `#isFlightStripRemovable` to true
-     *
-     * Provides a single source of change for the value of `#isFlightStripRemovable`
-     *
-     * @for AircraftModel
-     * @method isFlightStripRemovable
-     */
-    setIsFlightStripRemovable() {
-        this.isFlightStripRemovable = true;
     }
 
     /**
@@ -1249,7 +1216,7 @@ export default class AircraftModel {
         let alt_log;
         let alt_say;
 
-        if (this.isArrival()) {
+        if (this.isAirborne()) {
             const altdiff = this.altitude - this.mcp.altitude;
             const alt = digits_decimal(this.altitude, -2);
 
@@ -1275,9 +1242,7 @@ export default class AircraftModel {
                 ],
                 this.pilotVoice
             );
-        }
-
-        if (this.isDeparture()) {
+        } else {
             UiController.ui_log(`${AirportController.airport_get().radio.twr}, ${this.callsign}, ready to taxi`);
             speech_say(
                 [
@@ -2488,7 +2453,6 @@ export default class AircraftModel {
         const altitude_diff = this.altitude - this.target.altitude;
         let climbRate = this.getClimbRate() * PERFORMANCE.TYPICAL_CLIMB_FACTOR;
 
-        // TODO: Ensure expediting is STOPPED when the altitude is reached
         if (this.mcp.shouldExpediteAltitudeChange || this.isTakeoff()) {
             climbRate = this.model.rate.climb;
         }
@@ -2713,7 +2677,7 @@ export default class AircraftModel {
         this.updateFlightPhase();
         this.updateTarget();
         this.updatePhysics();
-        this._updateAircraftVisibility();
+        this._updateAircraftControllability();
     }
 
     /**
@@ -2785,9 +2749,6 @@ export default class AircraftModel {
         if (this.isControllable) {
             this.callUp();
 
-            // for reentry, see #993
-            this.isFlightStripRemovable = false;
-
             return;
         }
 
@@ -2797,34 +2758,22 @@ export default class AircraftModel {
 
     /**
      * @for AircraftModel
-     * @method _updateAircraftVisibility
+     * @method _updateAircraftControllability
      * @private
      */
-    _updateAircraftVisibility() {
-        const isInsideAirspace = this.isInsideAirspace(AirportController.airport_get());
-
-        if (isInsideAirspace === this.isControllable || this.projected) {
+    _updateAircraftControllability() {
+        if (this.projected) {
             return;
         }
 
-        this._updateControllableStatus(isInsideAirspace);
-        this._contactAircraftAfterControllabilityChange();
-    }
+        const isInsideAirspace = this.isInsideAirspace(AirportController.airport_get());
 
-    /**
-     * Updates the `#isControllable` property when an aircraft either
-     * enters or exits controlled airspace
-     *
-     * @for AircraftModel
-     * @method _updateControllableStatus
-     * @param {booelan} nextControllableStatus
-     */
-    _updateControllableStatus(nextControllableStatus) {
-        this.isControllable = nextControllableStatus;
-
-        if (!nextControllableStatus) {
-            this.setIsFlightStripRemovable();
+        if (this.isControllable === isInsideAirspace) {
+            return;
         }
+
+        this.isControllable = isInsideAirspace;
+        this._contactAircraftAfterControllabilityChange();
     }
 
     /**
