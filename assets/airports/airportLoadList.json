@@ -44,6 +44,12 @@
         "premium": false
     },
     {
+        "icao": "eddm08",
+        "level": "hard",
+        "name": "Munich Airport - 08L/R Config",
+        "premium": false
+    },
+    {
         "icao": "eddt",
         "level": "medium",
         "name": "Berlin Tegel Airport",

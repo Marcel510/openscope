@@ -16,7 +16,7 @@
         "icao": {
           "description": "Airport icao identifier in lowercase",
           "type": "string",
-          "pattern": "^[a-z]{4}$"
+          "pattern": "^[a-z]{4}[0-9]{0,2}$"
         },
         "level": {
           "description": "Difficulty level based on the traffic",
