@@ -590,20 +590,13 @@ export default class InputController {
                 event.preventDefault();
 
                 break;
+            case KEY_CODES.TAB:
+            case LEGACY_KEY_CODES.TAB:
             case KEY_CODES.BACKQUOTE:
             case LEGACY_KEY_CODES.BACKQUOTE:
                 this.$commandInput.val('');
                 event.preventDefault();
                 this._toggleCommandBarContext();
-
-                break;
-            case KEY_CODES.TAB:
-            case LEGACY_KEY_CODES.TAB:
-                event.preventDefault();
-
-                if (this.commandBarContext === COMMAND_CONTEXT.AIRCRAFT) {
-                    this._autocompleteController.activate();
-                }
 
                 break;
             case KEY_CODES.ESCAPE:
